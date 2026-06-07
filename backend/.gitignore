@@ -1,0 +1,15 @@
+# Python files
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+
+# Environment files
+.env
+.env.*
+.env
+# IDE files
+.vscode/
+.idea/

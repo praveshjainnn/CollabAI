@@ -1,0 +1,43 @@
+# Dependency directories
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+
+# Build outputs
+.next/
+dist/
+build/
+backend/dist/
+frontend/out/
+*.log
+
+# Environment secrets (CRITICAL for Hackathon Security)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+backend/.env
+frontend/.env.local
+!.env.example
+!.env.*.example
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE Settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+.tmp/
+.cache/
+.turbo/
+
+# Backend compiled files
+backend/src/lib/*.js
+
