@@ -1,22 +1,11 @@
 import axios from 'axios';
 import { toast } from 'sonner';
 
-const getEnvUrl = (isWs: boolean, defaultValue: string) => {
-  const envUrl = isWs ? process.env.NEXT_PUBLIC_WS_URL : process.env.NEXT_PUBLIC_API_URL;
-  
-  if (typeof window !== 'undefined' && !envUrl) {
-    const protocol = window.location.protocol;
-    const host = window.location.host;
-    const wsProtocol = protocol === 'https:' ? 'wss:' : 'ws:';
-    return isWs ? `${wsProtocol}//${host}` : `${protocol}//${host}`;
-  }
-  
-  const url = envUrl || defaultValue;
-  return url.endsWith('/') ? url.slice(0, -1) : url;
-};
+const PROD_API = 'https://collabai-backend-wx89.onrender.com';
+const PROD_WS  = 'wss://collabai-backend-wx89.onrender.com';
 
-const API_URL = getEnvUrl(false, 'http://localhost:4000');
-const WS_URL = getEnvUrl(true, 'ws://localhost:4000');
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || PROD_API).replace(/\/$/, '');
+const WS_URL  = (process.env.NEXT_PUBLIC_WS_URL  || PROD_WS ).replace(/\/$/, '');
 
 export const api = axios.create({
   baseURL: `${API_URL}/api`,

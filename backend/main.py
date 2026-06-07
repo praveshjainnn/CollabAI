@@ -38,15 +38,21 @@ app = FastAPI(
     version="2.0.0"
 )
 
-# CORS configuration
+# CORS configuration — allow Vercel production + all preview URLs + localhost
 allowed_origins = [
     settings.FRONTEND_URL,
+    "https://collabai-nine.vercel.app",
     "http://localhost:3000",
+    "http://localhost:3001",
 ]
+
+# Allow all *.vercel.app preview deployment URLs
+allowed_origin_regex = r"https://.*\.vercel\.app"
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[origin for origin in allowed_origins if origin],
+    allow_origins=[o for o in allowed_origins if o],
+    allow_origin_regex=allowed_origin_regex,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
