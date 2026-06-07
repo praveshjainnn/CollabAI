@@ -21,6 +21,7 @@
 
 ---
 
+
 ## 🎯 What Is CollabAI?
 
 **CollabAI** is a full-stack, production-grade collaborative document editor — think Google Docs, but built from scratch with a modern Python backend and AI baked in from day one.
@@ -28,6 +29,22 @@
 Multiple users can edit the **same document simultaneously** in real time, with zero conflicts. Changes appear instantly across all connected devices, even if two people type at the exact same character position — because it uses **CRDT mathematics** to resolve every possible conflict automatically.
 
 > **Built by [Pravesh Jain](https://github.com/praveshjainnn)** · Full-stack project · Open Source · MIT License
+
+
+<h2>Home Page</h2>
+<p align="center">
+  <img src="images/Home.png" width="1000">
+</p>
+
+<h2>How It Works</h2>
+<p align="center">
+  <img src="images/features.png" width="1000">
+</p>
+
+<h2>Tech Stack</h2>
+<p align="center">
+  <img src="images/tech-stack.png" width="1000">
+</p>
 
 ---
 ![CollabAI Architecture](https://github.com/praveshjainnn/CollabAI/blob/main/collab_editor_architecture_lime_cream.svg?raw=true)
@@ -60,29 +77,7 @@ Multiple users can edit the **same document simultaneously** in real time, with 
 - Shareable invite links with expiry
 
 
----
 
-## 🏗️ How It Works (Architecture)
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    Browser (Next.js)                     │
-│   Tiptap Editor  ←→  Yjs (CRDT State)  ←→  IndexedDB   │
-└──────────────────────────┬──────────────────────────────┘
-                           │  WebSocket (y-websocket)
-┌──────────────────────────▼──────────────────────────────┐
-│                 Python Backend (FastAPI)                  │
-│                                                          │
-│  REST API          WebSocket Server      AI Router       │
-│  /api/auth    ←→   pycrdt-websocket  ←→  Groq/Gemini    │
-│  /api/docs         (CRDT sync engine)    /Ollama         │
-└──────────────────────────┬──────────────────────────────┘
-                           │
-              ┌────────────▼────────────┐
-              │   NeonDB (PostgreSQL)    │
-              │  users · documents ·    │
-              │  collaborators · links  │
-              └─────────────────────────┘
 ```
 
 ### Why CRDTs? (Not Operational Transformation)
