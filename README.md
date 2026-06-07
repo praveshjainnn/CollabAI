@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <div align="center">
 
 # ✍️ CollabAI
@@ -275,3 +276,6 @@ MIT License — free to use, modify, and distribute.
 *If this project helped you, please consider giving it a ⭐*
 
 </div>
+=======
+# CollabAI
+>>>>>>> cd2570793c7a8c3b42605c7084349f6983bb95d2
