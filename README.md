@@ -7,7 +7,7 @@
 
 **Write together. Think together. Ship together.**
 
-[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Visit_App-e3f988?style=for-the-badge)](https://github.com/praveshjainnn/CollabAI)
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Visit_App-e3f988?style=for-the-badge)](https://collabai-nine.vercel.app/)
 [![GitHub Stars](https://img.shields.io/github/stars/praveshjainnn/CollabAI?style=for-the-badge&color=e3f988)](https://github.com/praveshjainnn/CollabAI/stargazers)
 [![License: MIT](https://img.shields.io/badge/License-MIT-e3f988?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
