@@ -30,6 +30,8 @@ Multiple users can edit the **same document simultaneously** in real time, with 
 > **Built by [Pravesh Jain](https://github.com/praveshjainnn)** · Full-stack project · Open Source · MIT License
 
 ---
+![CollabAI Architecture](https://github.com/praveshjainnn/CollabAI/blob/main/collab_editor_architecture_lime_cream.svg?raw=true)
+
 
 ## ✨ Key Features
 
