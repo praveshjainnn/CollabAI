@@ -57,15 +57,6 @@ Multiple users can edit the **same document simultaneously** in real time, with 
 - Role-based access: **Owner**, **Editor**, **Viewer**
 - Shareable invite links with expiry
 
----
-
-## 🖥️ Screenshots
-
-> *Landing → Dashboard → Editor — all in the same lime-green design system*
-
-| Landing Page | Dashboard | Document Editor |
-|:---:|:---:|:---:|
-| Clean hero with animated features | Document cards with search & create | Full Tiptap editor with AI toolbar |
 
 ---
 
@@ -188,24 +179,7 @@ OLLAMA_MODEL=llama3.2
 
 > Without any key, the app works fully — only the AI slash commands (`/summarize`, `/refine`, etc.) will be disabled.
 
----
 
-## 🐳 Production Deployment (Docker)
-
-The full stack is containerized and ready to deploy:
-
-```bash
-# Clone on your server
-git clone https://github.com/praveshjainnn/CollabAI.git
-cd CollabAI
-
-# Set environment variables
-cp backend/.env backend/.env.production
-# Edit backend/.env.production with production values
-
-# Deploy everything
-docker-compose up -d --build
-```
 
 This starts:
 - **Nginx** reverse proxy (port 80/443 with SSL)
@@ -278,4 +252,4 @@ MIT License — free to use, modify, and distribute.
 </div>
 =======
 # CollabAI
->>>>>>> cd2570793c7a8c3b42605c7084349f6983bb95d2
+
