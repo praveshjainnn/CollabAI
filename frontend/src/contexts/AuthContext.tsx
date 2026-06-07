@@ -39,19 +39,33 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedToken = localStorage.getItem('collabai_token');
+      if (storedToken) {
+        setToken(storedToken);
+      }
+    }
     void refreshMe();
   }, [refreshMe]);
 
   const login = useCallback(async (email: string, password: string) => {
     const { data } = await api.post('/auth/login', { email, password });
+    const userToken = data.token || null;
     setUser(data.user || null);
-    setToken(data.token || null);
+    setToken(userToken);
+    if (userToken) {
+      localStorage.setItem('collabai_token', userToken);
+    }
   }, []);
 
   const register = useCallback(async (name: string, email: string, password: string) => {
     const { data } = await api.post('/auth/register', { name, email, password });
+    const userToken = data.token || null;
     setUser(data.user || null);
-    setToken(data.token || null);
+    setToken(userToken);
+    if (userToken) {
+      localStorage.setItem('collabai_token', userToken);
+    }
   }, []);
 
   const logout = useCallback(async () => {
@@ -59,6 +73,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       await api.post('/auth/logout');
     } catch {
       // swallow logout network errors and clear local state anyway
+    }
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('collabai_token');
     }
     setUser(null);
     setToken(null);
