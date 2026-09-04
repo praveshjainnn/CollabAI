@@ -25,6 +25,11 @@ services:
       - NODE_ENV=production
       - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
       - PORT=4000
+      # AWS S3 — optional; app works without these (falls back to direct response)
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
+      - AWS_REGION=${AWS_REGION:-eu-north-1}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET:-}
     expose:
       - "4000"
     healthcheck:

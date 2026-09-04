@@ -12,6 +12,7 @@ from typing import Optional, List
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.core.docx_generator import convert_html_to_docx
+from app.core.s3_service import upload_export_to_s3
 from app.models.models import User, Document, DocumentAccess, Revision, DocumentShareLink
 from app.schemas.document import (
     DocumentCreate, DocumentUpdate, DocumentResponse, DocumentDetailResponse,
@@ -268,27 +269,55 @@ async def export_document(
     db: AsyncSession = Depends(get_db)
 ):
     await require_document_access(db, current_user.id, id)
-    
+
     html = body.get("html", "").strip()
-    title = body.get("title", "document").strip()
-    
+    title = body.get("title", "document").strip() or "document"
+
     if not html:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="No content to export"
         )
-        
+
+    # Sanitise filename: replace characters that are illegal in filenames
+    safe_title = "".join(c if c.isalnum() or c in " _-" else "_" for c in title).strip()
+    filename = f"{safe_title}.docx"
+    content_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
     docx_bytes = convert_html_to_docx(html, title)
-    
-    # Return file response
+
+    # --- S3 path ---
+    # Try to upload to S3 and return a presigned download URL.
+    # The browser will then download directly from S3 (not through EC2),
+    # which saves bandwidth on your free-tier t2.micro instance.
+    presigned_url = await upload_export_to_s3(
+        file_bytes=docx_bytes,
+        user_id=current_user.id,
+        document_id=id,
+        filename=filename,
+        content_type=content_type,
+    )
+
+    if presigned_url:
+        # S3 is configured: return the URL for the client to trigger the download.
+        # The URL is valid for AWS_S3_EXPORT_URL_EXPIRE_SECONDS (default: 3600s).
+        return {
+            "download_url": presigned_url,
+            "filename": filename,
+            "expires_in": 3600,
+        }
+
+    # --- Fallback path ---
+    # S3 not configured (or upload failed): stream the bytes directly.
+    # This is the original behaviour, so nothing breaks without AWS creds.
     headers = {
-        "Content-Disposition": f'attachment; filename="{title}.docx"',
-        "Content-Length": str(len(docx_bytes))
+        "Content-Disposition": f'attachment; filename="{filename}"',
+        "Content-Length": str(len(docx_bytes)),
     }
     return FastAPIResponse(
         content=docx_bytes,
-        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        headers=headers
+        media_type=content_type,
+        headers=headers,
     )
 
 # Revisions

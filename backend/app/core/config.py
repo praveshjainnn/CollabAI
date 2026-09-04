@@ -22,6 +22,13 @@ class Settings(BaseSettings):
     GROQ_API_KEY: Optional[str] = ""
     AI_MODEL: str = "llama-3.3-70b-versatile"
 
+    # AWS S3 Settings
+    AWS_ACCESS_KEY_ID: Optional[str] = ""
+    AWS_SECRET_ACCESS_KEY: Optional[str] = ""
+    AWS_REGION: str = "us-east-1"
+    AWS_S3_BUCKET: Optional[str] = ""
+    AWS_S3_EXPORT_URL_EXPIRE_SECONDS: int = 3600  # presigned URL valid for 1 hour
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

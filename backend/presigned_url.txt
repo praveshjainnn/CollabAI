@@ -1,0 +1,2 @@
+FULL URL BELOW - copy everything:
+https://s3.eu-north-1.amazonaws.com/collabai-exports-praveshjainn/exports/u1/d1/test.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIASMOINZYE7KES6AZZ%2F20260903%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20260903T050209Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=368e92c45c3f9106e8ced3004aa2d786a81355b645756dc47f0e56aabde000f3

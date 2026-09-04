@@ -350,26 +350,56 @@ export default function DocumentPage() {
         await html2pdf().from(container).set(opt).save();
         toast.success('PDF downloaded smoothly!');
       } else {
-        // Handle DOCX export via backend
-        const response = await api.post(
-          `/documents/${docId}/export`,
+        // Handle DOCX export via backend.
+        // The backend returns one of two shapes depending on whether S3 is configured:
+        //   Shape A (S3):      { download_url: string, filename: string, expires_in: number }
+        //   Shape B (fallback): binary arraybuffer  ←  original behaviour
+        //
+        // We probe the Content-Type header first to decide which path to take.
+        const rawResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || ''}/documents/${docId}/export`,
           {
-            html: editor.getHTML(),
-            title: title || 'document',
-          },
-          { responseType: 'arraybuffer' }
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ html: editor.getHTML(), title: title || 'document' }),
+            credentials: 'include',
+          }
         );
 
-        const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }));
-        const link = window.document.createElement('a');
-        link.href = url;
-        const filename = `${safeTitle.replace(/[^\w\-]+/g, '_')}.docx`;
-        link.setAttribute('download', filename);
-        window.document.body.appendChild(link);
-        link.click();
-        link.remove();
-        window.URL.revokeObjectURL(url);
+        if (!rawResponse.ok) {
+          throw new Error(`Export failed: ${rawResponse.status}`);
+        }
+
+        const contentType = rawResponse.headers.get('Content-Type') || '';
+
+        if (contentType.includes('application/json')) {
+          // Shape A: S3 presigned URL — download directly from S3
+          // The file travels S3 → Browser without touching EC2 again.
+          const data = await rawResponse.json();
+          const anchor = window.document.createElement('a');
+          anchor.href = data.download_url;
+          anchor.download = data.filename;
+          window.document.body.appendChild(anchor);
+          anchor.click();
+          anchor.remove();
+        } else {
+          // Shape B: binary blob from FastAPI (S3 not configured)
+          // Original behaviour — keeps working without AWS creds.
+          const buffer = await rawResponse.arrayBuffer();
+          const url = window.URL.createObjectURL(
+            new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
+          );
+          const link = window.document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', `${safeTitle.replace(/[^\w\-]+/g, '_')}.docx`);
+          window.document.body.appendChild(link);
+          link.click();
+          link.remove();
+          window.URL.revokeObjectURL(url);
+        }
+
         toast.success('Word document downloaded smoothly!');
+
       }
     } catch (err) {
       console.error('Failed to export document', err);
