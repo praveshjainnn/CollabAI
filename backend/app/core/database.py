@@ -26,12 +26,18 @@ db_url = get_async_db_url(settings.DATABASE_URL)
 
 engine = create_async_engine(
     db_url,
-    pool_size=20,
-    max_overflow=10,
-    pool_recycle=3600,
+    # t2.micro has 1 GB RAM — keep pool small to avoid OOM.
+    # NeonDB handled large pools fine; RDS on t2.micro cannot.
+    pool_size=5,
+    max_overflow=2,
+    pool_recycle=1800,   # Recycle every 30 min (RDS drops idle connections at 1h)
     pool_pre_ping=True,
     connect_args={
-        "ssl": True,  # Force SSL connection in asyncpg (essential for Neon)
+        # 'require' = encrypted but skip cert verification.
+        # ssl=True would verify the cert chain, which fails because RDS uses
+        # AWS's private CA (not in Python's default trust store).
+        # NeonDB uses a public CA so ssl=True works there.
+        "ssl": "require",
         "command_timeout": 30,
         "timeout": 30
     }

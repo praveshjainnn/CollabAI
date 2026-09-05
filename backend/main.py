@@ -83,7 +83,8 @@ async def startup_event():
     try:
         async with engine.connect() as conn:
             await conn.execute(text("SELECT 1"))
-            print(f"Database connected successfully to Neon!")
+            db_host = settings.DATABASE_URL.split("@")[-1].split("/")[0] if "@" in settings.DATABASE_URL else "unknown"
+            print(f"Database connected successfully! Host: {db_host}")
     except Exception as e:
         print(f"CRITICAL: Database connection failed during startup: {e}")
         sys.exit(1)
