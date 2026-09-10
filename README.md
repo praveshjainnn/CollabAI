@@ -117,19 +117,10 @@ CollabAI uses **Conflict-free Replicated Data Types (Yjs)** — a peer-to-peer m
 
 CollabAI is deployed entirely on **AWS Free Tier** services in `eu-north-1` (Stockholm).
 
-```mermaid
-architecture-beta
-    group aws(cloud)[AWS eu-north-1]
+<p align="center">
+  <img src="images/mermaid-ai-diagram-2026-09-10-154134.png" width="700" alt="CollabAI AWS Architecture">
+</p>
 
-    service internet(internet)[Internet]
-    service ec2(server)[EC2 t3.micro] in aws
-    service rds(database)[RDS db.t3.micro] in aws
-    service s3(disk)[S3 Bucket] in aws
-
-    internet:R --> L:ec2
-    ec2:R --> L:rds
-    ec2:B --> T:s3
-```
 
 | Service | Tier | Role |
 |---|---|---|
