@@ -80,9 +80,9 @@ Multiple users can edit the **same document simultaneously** in real time, with 
 
 
 
-```
 
 ### Why CRDTs? (Not Operational Transformation)
+
 Most collaborative editors use **Operational Transformation (OT)** — which requires a central server to sequence every operation. If the server goes down, editing stops.
 
 CollabAI uses **Conflict-free Replicated Data Types (Yjs)** — a peer-to-peer math model where:
