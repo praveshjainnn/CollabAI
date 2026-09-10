@@ -14,7 +14,9 @@
 [![Next.js](https://img.shields.io/badge/Next.js_16-black?style=flat-square&logo=next.js)](https://nextjs.org/)
 [![Python](https://img.shields.io/badge/Python_FastAPI-3776AB?style=flat-square&logo=python&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Yjs CRDT](https://img.shields.io/badge/Yjs-CRDT_Sync-orange?style=flat-square)](https://yjs.dev/)
-[![PostgreSQL](https://img.shields.io/badge/NeonDB-PostgreSQL-336791?style=flat-square&logo=postgresql&logoColor=white)](https://neon.tech/)
+[![PostgreSQL](https://img.shields.io/badge/AWS_RDS-PostgreSQL-336791?style=flat-square&logo=postgresql&logoColor=white)](https://aws.amazon.com/rds/)
+[![AWS S3](https://img.shields.io/badge/AWS_S3-Storage-FF9900?style=flat-square&logo=amazons3&logoColor=white)](https://aws.amazon.com/s3/)
+[![AWS EC2](https://img.shields.io/badge/AWS_EC2-Compute-FF9900?style=flat-square&logo=amazonec2&logoColor=white)](https://aws.amazon.com/ec2/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
 
 </div>
@@ -100,13 +102,47 @@ CollabAI uses **Conflict-free Replicated Data Types (Yjs)** — a peer-to-peer m
 | **Real-time Sync** | Yjs + y-websocket | Industry-standard CRDT library |
 | **Backend** | Python FastAPI + asyncpg | Async Python, fast, OpenAPI auto-docs |
 | **CRDT Server** | pycrdt-websocket | Python-native Yjs WebSocket server |
-| **Database** | NeonDB (Serverless PostgreSQL) | Zero-config, scales to zero |
+| **Database** | AWS RDS db.t3.micro (PostgreSQL 16) | Managed, always-on, VPC-isolated |
 | **Auth** | JWT + python-jose + bcrypt | Stateless, secure |
 | **AI** | Groq SDK + Google Gemini SDK | Fast inference + powerful models |
 | **Local AI** | Ollama | Free local fallback (llama3.2, mistral) |
 | **Export** | html2pdf.js + python-docx | Browser PDF, backend DOCX |
-| **Deployment** | Docker + Nginx + AWS EC2 | Production-grade, reproducible |
+| **File Storage** | AWS S3 + Presigned URLs | Scalable exports, no EC2 bandwidth cost |
+| **Deployment** | Docker + AWS EC2 t3.micro | Production-grade, reproducible |
 | **CI/CD** | GitHub Actions | Auto-deploy on push to `main` |
+
+---
+
+## ☁️ AWS Infrastructure
+
+CollabAI is deployed entirely on **AWS Free Tier** services in `eu-north-1` (Stockholm).
+
+```mermaid
+architecture-beta
+    group aws(cloud)[AWS eu-north-1]
+
+    service internet(internet)[Internet]
+    service ec2(server)[EC2 t3.micro] in aws
+    service rds(database)[RDS db.t3.micro] in aws
+    service s3(disk)[S3 Bucket] in aws
+
+    internet:R --> L:ec2
+    ec2:R --> L:rds
+    ec2:B --> T:s3
+```
+
+| Service | Tier | Role |
+|---|---|---|
+| **EC2 t3.micro** | Free (750 hrs/month) | Runs Docker container with FastAPI backend |
+| **RDS db.t3.micro** | Free (750 hrs/month) | PostgreSQL database (5 tables) |
+| **S3** | Free (5 GB / 2000 PUTs) | DOCX export storage via presigned URLs |
+| **IAM** | Always free | Least-privilege access control |
+
+### Key Design Decisions
+- **Presigned URLs**: DOCX exports upload to S3 and return a time-limited URL — EC2 never streams the file, saving bandwidth and CPU
+- **Connection pooling**: `pool_size=5` on t3.micro (1GB RAM) — keeps memory usage under 100MB for DB connections
+- **`ssl='require'`**: RDS uses AWS private CA (not in Python's default trust store) — `ssl=True` would fail cert verification
+- **Security groups**: RDS only reachable from EC2 and local dev IP — S3 access only via signed requests
 
 ---
 
