@@ -18,9 +18,9 @@ class Settings(BaseSettings):
     
     # AI Settings
     GEMINI_API_KEY: Optional[str] = ""
-    GEMINI_MODEL: str = "gemini-2.0-flash-lite"
+    GEMINI_MODEL: str = "gemini-3.5-flash-lite"
     GROQ_API_KEY: Optional[str] = ""
-    AI_MODEL: str = "llama-3.3-70b-versatile"
+    AI_MODEL: str = "llama3-8b-8192"
 
     # AWS S3 Settings
     AWS_ACCESS_KEY_ID: Optional[str] = ""

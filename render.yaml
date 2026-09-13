@@ -17,9 +17,9 @@ services:
       - key: GEMINI_API_KEY
         sync: false
       - key: GEMINI_MODEL
-        value: gemini-2.0-flash-lite
+        value: gemini-3.5-flash-lite
       - key: GROQ_API_KEY
         sync: false
       - key: AI_MODEL
-        value: llama-3.3-70b-versatile
+        value: llama3-8b-8192
     healthCheckPath: /health

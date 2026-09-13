@@ -6,8 +6,8 @@ from app.models.models import User
 
 router = APIRouter(prefix="/ai", tags=["AI Commands"])
 
-DEFAULT_GROQ_MODEL = "llama-3.3-70b-versatile"
-DEFAULT_GEMINI_MODEL = "gemini-2.0-flash"
+DEFAULT_GROQ_MODEL = "llama3-8b-8192"
+DEFAULT_GEMINI_MODEL = "gemini-3.5-flash-lite"
 
 def build_prompt(instruction: str, selectionText: str, documentText: str) -> str:
     return "\n".join([
