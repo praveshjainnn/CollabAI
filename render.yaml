@@ -22,4 +22,14 @@ services:
         sync: false
       - key: AI_MODEL
         value: llama3-8b-8192
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_REGION
+        value: eu-north-1
+      - key: AWS_S3_BUCKET
+        value: collabai-exports-praveshjainn
+      - key: AWS_S3_EXPORT_URL_EXPIRE_SECONDS
+        value: "3600"
     healthCheckPath: /health
