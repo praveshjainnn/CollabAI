@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     
     # AI Settings
     GEMINI_API_KEY: Optional[str] = ""
-    GEMINI_MODEL: str = "gemini-2.0-flash"
+    GEMINI_MODEL: str = "gemini-2.0-flash-lite"
     GROQ_API_KEY: Optional[str] = ""
     AI_MODEL: str = "llama-3.3-70b-versatile"
 
