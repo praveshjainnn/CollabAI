@@ -52,35 +52,7 @@ def build_autocomplete_prompt(document_text: str) -> str:
     ])
 
 async def call_llm(prompt: str, max_tokens: int = 1024, temperature: float = 0.5) -> str:
-    # 1. Prefer Google Gemini if configured
-    if settings.GEMINI_API_KEY:
-        try:
-            import google.generativeai as genai
-            genai.configure(api_key=settings.GEMINI_API_KEY)
-            model_name = settings.GEMINI_MODEL or DEFAULT_GEMINI_MODEL
-            model = genai.GenerativeModel(model_name)
-            
-            # Configure generation parameters
-            generation_config = genai.types.GenerationConfig(
-                temperature=temperature,
-                max_output_tokens=max_tokens,
-            )
-            
-            response = await model.generate_content_async(
-                prompt,
-                generation_config=generation_config
-            )
-            return response.text.strip()
-        except Exception as e:
-            print(f"[GEMINI ERROR] {e}")
-            # Fall back to Groq if configured, else raise exception
-            if not settings.GROQ_API_KEY:
-                raise HTTPException(
-                    status_code=status.HTTP_502_BAD_GATEWAY,
-                    detail=f"Gemini generation failed: {str(e)}"
-                )
-
-    # 2. Fall back to Groq if configured
+    # 1. Prefer Groq (primary)
     if settings.GROQ_API_KEY:
         try:
             model = settings.AI_MODEL or DEFAULT_GROQ_MODEL
@@ -95,25 +67,52 @@ async def call_llm(prompt: str, max_tokens: int = 1024, temperature: float = 0.5
                 "temperature": temperature,
                 "max_tokens": max_tokens
             }
-            
+
             async with httpx.AsyncClient(timeout=30.0) as client:
                 response = await client.post(url, headers=headers, json=payload)
                 if response.status_code != 200:
                     raise Exception(f"Groq returned status {response.status_code}: {response.text}")
-                    
+
                 data = response.json()
                 return data["choices"][0]["message"]["content"].strip()
         except Exception as e:
             print(f"[GROQ ERROR] {e}")
+            # Fall back to Gemini if configured, else raise
+            if not settings.GEMINI_API_KEY:
+                raise HTTPException(
+                    status_code=status.HTTP_502_BAD_GATEWAY,
+                    detail=f"Groq generation failed: {str(e)}"
+                )
+
+    # 2. Fall back to Google Gemini (secondary)
+    if settings.GEMINI_API_KEY:
+        try:
+            import google.generativeai as genai
+            genai.configure(api_key=settings.GEMINI_API_KEY)
+            model_name = settings.GEMINI_MODEL or DEFAULT_GEMINI_MODEL
+            model = genai.GenerativeModel(model_name)
+
+            generation_config = genai.types.GenerationConfig(
+                temperature=temperature,
+                max_output_tokens=max_tokens,
+            )
+
+            response = await model.generate_content_async(
+                prompt,
+                generation_config=generation_config
+            )
+            return response.text.strip()
+        except Exception as e:
+            print(f"[GEMINI ERROR] {e}")
             raise HTTPException(
                 status_code=status.HTTP_502_BAD_GATEWAY,
-                detail=f"Groq generation failed: {str(e)}"
+                detail=f"Gemini generation failed: {str(e)}"
             )
-            
+
     # 3. Neither key is configured
     raise HTTPException(
         status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-        detail="AI assistant is not configured. Please add GEMINI_API_KEY or GROQ_API_KEY to your backend .env file."
+        detail="AI assistant is not configured. Please add GROQ_API_KEY or GEMINI_API_KEY to your backend .env file."
     )
 
 @router.post("/command")
