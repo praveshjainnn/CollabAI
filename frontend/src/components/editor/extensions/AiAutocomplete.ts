@@ -112,7 +112,8 @@ export const AiAutocomplete = Extension.create<AiAutocompleteOptions>({
 
               if (timeout) clearTimeout(timeout);
               
-              if (!state.selection.empty || state.doc.textContent.length < 5) return;
+              if (!state.selection.empty) return; // only fire when cursor is placed (no active selection)
+              if (state.doc.textContent.length < 10) return;
 
               timeout = setTimeout(async () => {
                 if (view.isDestroyed) return;
